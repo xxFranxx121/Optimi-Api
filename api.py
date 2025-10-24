@@ -21,7 +21,6 @@ class DatosEntrada(BaseModel):
 
 
 def make_driver():
-    # Chrome en modo headless (sin ventana)
     opts = Options()
     opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
@@ -29,15 +28,9 @@ def make_driver():
     opts.add_argument("--disable-gpu")
     opts.add_argument("--disable-extensions")
     opts.add_argument("--window-size=1920,1080")
-    opts.add_argument("--remote-debugging-port=9222")
+    opts.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
 
-    # Usa el Chrome del sistema (instalado por Docker)
-    chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
-    driver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver")
-
-    service = Service(executable_path=driver_path)
-
-    # Inicia el driver
+    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
     driver = webdriver.Chrome(service=service, options=opts)
     return driver
 
