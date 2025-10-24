@@ -21,18 +21,17 @@ class DatosEntrada(BaseModel):
 
 
 def make_driver():
-    opts = Options()
-    opts.add_argument("--headless=new")
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument("--disable-gpu")
-    opts.add_argument("--disable-extensions")
-    opts.add_argument("--window-size=1920,1080")
-    opts.binary_location = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+    options = Options()
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--window-size=1920,1080")
+    options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/google-chrome")
 
-    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
-    driver = webdriver.Chrome(service=service, options=opts)
-    return driver
+    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver"))
+    return webdriver.Chrome(service=service, options=options)
 
 
 def login(driver, wait, usuario, password):
