@@ -29,6 +29,8 @@ def make_driver() -> webdriver.Chrome:
     opts.page_load_strategy = "eager"
     opts.add_argument("--remote-debugging-port=0")
 
+    opts.binary_location = "/usr/bin/google-chrome"
+
     prefs = {
         "profile.managed_default_content_settings.images": 2,
         "profile.managed_default_content_settings.stylesheets": 2,

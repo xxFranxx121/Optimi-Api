@@ -28,7 +28,7 @@ RUN CD_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/
 # Descargamos y descomprimimos
 RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/$CD_VERSION/linux64/chromedriver-linux64.zip
 RUN unzip chromedriver-linux64.zip
-# Mover el binario a /usr/local/bin, que es una ruta estándar para binarios de usuario
+# Mover el binario a /usr/local/bin
 RUN mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
 RUN chmod +x /usr/local/bin/chromedriver
 # Limpiamos los archivos de instalación
