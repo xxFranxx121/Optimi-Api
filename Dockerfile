@@ -4,9 +4,8 @@ FROM python:3.10-slim
 # Establecemos el directorio de trabajo
 WORKDIR /app
 
-# 1. Instalar dependencias CRUCIALES del sistema para Chrome Headless
+# 1. Instalar dependencias CRUCIALES y Chrome (Método moderno)
 RUN apt-get update && apt-get install -y \
-    # Dependencias comunes de Chrome en Linux
     wget \
     unzip \
     gnupg \
@@ -18,13 +17,16 @@ RUN apt-get update && apt-get install -y \
     libxcursor1 \
     libxi6 \
     libxtst6 \
+    curl \
     --no-install-recommends \
-# Agregamos el repositorio de Google Chrome
-&& wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-&& echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+# 🔑 NUEVO MÉTODO SEGURO: Usamos curl y gpg para agregar el repo de Google
+&& curl -sS https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
+&& echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+\
 # Instalamos Google Chrome
 && apt-get update \
 && apt-get install -y google-chrome-stable \
+\
 # Limpiamos la caché
 && rm -rf /var/lib/apt/lists/*
 
@@ -47,3 +49,4 @@ COPY api.py .
 
 # 5. Comando para iniciar la aplicación
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]
+
