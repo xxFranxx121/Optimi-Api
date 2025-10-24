@@ -36,7 +36,7 @@ def make_driver() -> webdriver.Chrome:
     opts.add_experimental_option("prefs", prefs)
     opts.add_experimental_option("excludeSwitches", ["enable-logging", "enable-automation"])
 
-    service = Service(log_path=os.devnull)
+    service = Service(executable_path="/usr/bin/chromedriver", log_path=os.devnull)
     return webdriver.Chrome(service=service, options=opts)
 
 
