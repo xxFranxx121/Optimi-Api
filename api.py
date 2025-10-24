@@ -20,17 +20,24 @@ class DatosEntrada(BaseModel):
     dni: str
 
 
-def make_driver():
-    options = Options()
-    options.add_argument("--headless=new")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")
+def make_driver() -> webdriver.Chrome:
+    opts = Options()
+    opts.add_argument("--headless=new")
+    opts.add_argument("--disable-gpu")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--window-size=1920,1080")
+    opts.page_load_strategy = "eager"
+    opts.add_argument("--remote-debugging-port=0")
 
-    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver"))
-    options.binary_location = os.getenv("CHROME_BIN", "/opt/google/chrome/google-chrome")
+    prefs = {
+        "profile.managed_default_content_settings.images": 2,
+        "profile.managed_default_content_settings.stylesheets": 2,
+    }
+    opts.add_experimental_option("prefs", prefs)
+    opts.add_experimental_option("excludeSwitches", ["enable-logging", "enable-automation"])
 
-    return webdriver.Chrome(service=service, options=options)
+    service = Service(log_path=os.devnull)
+    return webdriver.Chrome(service=service, options=opts)
 
 
 def login(driver, wait, usuario, password):
