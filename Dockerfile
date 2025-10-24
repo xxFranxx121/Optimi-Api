@@ -6,14 +6,13 @@ WORKDIR /app
 
 # 1. Instalar dependencias CRUCIALES del sistema para Chrome Headless
 RUN apt-get update && apt-get install -y \
-    # Dependencias comunes de Chrome en Linux (incluyendo fontconfig para renderizado)
+    # Dependencias comunes de Chrome en Linux
     wget \
     unzip \
     gnupg \
     libgbm-dev \
     libnss3 \
     libfontconfig1 \
-    libgconf-2-4 \
     libxcomposite1 \
     libxrandr2 \
     libxcursor1 \
@@ -30,16 +29,14 @@ RUN apt-get update && apt-get install -y \
 && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar el chromedriver coincidente
-RUN CHROME_MAJOR_VERSION=$(google-chrome --product-version | cut -d . -f 1)
-RUN CD_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR_VERSION})
-
-# Descargamos, descomprimimos y movemos chromedriver a la ruta /usr/bin/
-# ⚠️ CAMBIO CLAVE AQUÍ: De /usr/local/bin a /usr/bin
-RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/$CD_VERSION/linux64/chromedriver-linux64.zip
-RUN unzip chromedriver-linux64.zip
-RUN mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
-RUN chmod +x /usr/bin/chromedriver
-RUN rm -rf chromedriver-linux64.zip chromedriver-linux64
+# NOTA: Los paths /usr/bin/google-chrome y /usr/bin/chromedriver coinciden con tu api.py
+RUN export CHROME_MAJOR_VERSION=$(google-chrome --product-version | cut -d . -f 1) \
+    && export CD_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR_VERSION}) \
+    && wget -q https://storage.googleapis.com/chrome-for-testing-public/$CD_VERSION/linux64/chromedriver-linux64.zip \
+    && unzip chromedriver-linux64.zip \
+    && mv chromedriver-linux64/chromedriver /usr/bin/chromedriver \
+    && chmod +x /usr/bin/chromedriver \
+    && rm -rf chromedriver-linux64.zip chromedriver-linux64
 
 # 3. Instalar las dependencias de Python
 COPY requirements.txt .
@@ -50,4 +47,3 @@ COPY api.py .
 
 # 5. Comando para iniciar la aplicación
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]
-
