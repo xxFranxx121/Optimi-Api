@@ -33,11 +33,12 @@ RUN apt-get update && apt-get install -y \
 RUN CHROME_MAJOR_VERSION=$(google-chrome --product-version | cut -d . -f 1)
 RUN CD_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_${CHROME_MAJOR_VERSION})
 
-# Descargamos, descomprimimos y movemos chromedriver a la ruta /usr/local/bin/
+# Descargamos, descomprimimos y movemos chromedriver a la ruta /usr/bin/
+# ⚠️ CAMBIO CLAVE AQUÍ: De /usr/local/bin a /usr/bin
 RUN wget -q https://storage.googleapis.com/chrome-for-testing-public/$CD_VERSION/linux64/chromedriver-linux64.zip
 RUN unzip chromedriver-linux64.zip
-RUN mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver
-RUN chmod +x /usr/local/bin/chromedriver
+RUN mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
+RUN chmod +x /usr/bin/chromedriver
 RUN rm -rf chromedriver-linux64.zip chromedriver-linux64
 
 # 3. Instalar las dependencias de Python
@@ -49,3 +50,4 @@ COPY api.py .
 
 # 5. Comando para iniciar la aplicación
 CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]
+
