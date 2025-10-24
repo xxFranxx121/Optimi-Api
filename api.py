@@ -20,24 +20,26 @@ class DatosEntrada(BaseModel):
     dni: str
 
 
-def make_driver() -> webdriver.Chrome:
+def make_driver():
+    # Chrome en modo headless (sin ventana)
     opts = Options()
     opts.add_argument("--headless=new")
-    opts.add_argument("--disable-gpu")
     opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_argument("--disable-gpu")
+    opts.add_argument("--disable-extensions")
     opts.add_argument("--window-size=1920,1080")
-    opts.page_load_strategy = "eager"
-    opts.add_argument("--remote-debugging-port=0")
+    opts.add_argument("--remote-debugging-port=9222")
 
-    prefs = {
-        "profile.managed_default_content_settings.images": 2,
-        "profile.managed_default_content_settings.stylesheets": 2,
-    }
-    opts.add_experimental_option("prefs", prefs)
-    opts.add_experimental_option("excludeSwitches", ["enable-logging", "enable-automation"])
+    # Usa el Chrome del sistema (instalado por Docker)
+    chrome_path = os.getenv("CHROME_BIN", "/usr/bin/chromium")
+    driver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/bin/chromedriver")
 
-    service = Service(log_path=os.devnull)
-    return webdriver.Chrome(service=service, options=opts)
+    service = Service(executable_path=driver_path)
+
+    # Inicia el driver
+    driver = webdriver.Chrome(service=service, options=opts)
+    return driver
 
 
 def login(driver, wait, usuario, password):
