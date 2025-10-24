@@ -28,10 +28,15 @@ def make_driver():
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-extensions")
     options.add_argument("--window-size=1920,1080")
+    # binary_location apunta al google-chrome del Dockerfile
     options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/google-chrome")
 
-    # Selenium Manager se encarga de conseguir el driver correcto automáticamente
-    driver = webdriver.Chrome(options=options)
+    driver_path = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
+    if not os.path.isfile(driver_path):
+        raise RuntimeError(f"chromedriver not found at {driver_path}")
+
+    service = Service(executable_path=driver_path)
+    driver = webdriver.Chrome(service=service, options=options)
     return driver
 
 
