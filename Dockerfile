@@ -48,5 +48,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY api.py .
 
 # 5. Comando para iniciar la aplicación
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]
+CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port $PORT"]
+
 
