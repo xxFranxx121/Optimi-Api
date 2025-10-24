@@ -30,8 +30,9 @@ def make_driver():
     options.add_argument("--window-size=1920,1080")
     options.binary_location = os.getenv("CHROME_BIN", "/usr/bin/google-chrome")
 
-    service = Service(executable_path=os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver"))
-    return webdriver.Chrome(service=service, options=options)
+    # Selenium Manager se encarga de conseguir el driver correcto automáticamente
+    driver = webdriver.Chrome(options=options)
+    return driver
 
 
 def login(driver, wait, usuario, password):
