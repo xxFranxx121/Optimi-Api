@@ -17,18 +17,16 @@ RUN apt-get update && apt-get install -y \
     libxcursor1 \
     libxi6 \
     libxtst6 \
-    curl \
     --no-install-recommends \
-# 🔑 NUEVO MÉTODO SEGURO: Usamos curl y gpg para agregar el repo de Google
-&& curl -sS https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
-&& echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-\
-# Instalamos Google Chrome
-&& apt-get update \
-&& apt-get install -y google-chrome-stable \
-\
-# Limpiamos la caché
-&& rm -rf /var/lib/apt/lists/*
+    # Descargar la llave y guardarla en un keyring seguro (el reemplazo de apt-key)
+    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+    # Agregar el repositorio referenciando al keyring
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    # Instalar Chrome
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    # Limpiar
+    && rm -rf /var/lib/apt/lists/*
 
 # 2. Instalar el chromedriver coincidente
 # NOTA: Los paths /usr/bin/google-chrome y /usr/bin/chromedriver coinciden con tu api.py
@@ -49,6 +47,7 @@ COPY api.py .
 
 # 5. Comando para iniciar la aplicación
 CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port $PORT"]
+
 
 
 
